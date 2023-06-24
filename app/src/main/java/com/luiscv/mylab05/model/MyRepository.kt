@@ -1,0 +1,17 @@
+package com.luiscv.mylab05.model
+
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.luiscv.mylab05.entities.DataItem
+import com.luiscv.mylab05.paging.MyPagingSource
+import kotlinx.coroutines.flow.Flow
+
+class MyRepository {
+    fun getData(): Flow<PagingData<DataItem>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20),
+            pagingSourceFactory = { MyPagingSource() }
+        ).flow
+    }
+}
