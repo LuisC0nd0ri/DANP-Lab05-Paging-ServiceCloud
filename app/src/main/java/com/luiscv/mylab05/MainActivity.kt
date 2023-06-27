@@ -1,6 +1,7 @@
 package com.luiscv.mylab05
 
 //todo: ESTE ES UN EJEMPLO DEL USO DE JETPACK COMPOSE Y PAGING
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -16,15 +17,22 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import androidx.room.Room
 import com.luiscv.mylab05.entities.SensorDataItem
+import com.luiscv.mylab05.model.AppDatabase
 import com.luiscv.mylab05.mycomponents.SensorDataItemCard
 import com.luiscv.mylab05.operations.addSensorDataItem
 import com.luiscv.mylab05.paging.MyViewModel
 import com.luiscv.mylab05.ui.theme.MyLab05Theme
+import kotlinx.coroutines.*
 
 class MainActivity : ComponentActivity() {
 
@@ -79,31 +87,70 @@ fun FloatingButton(onClick: () -> Unit) {
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun MyApp(viewModel: MyViewModel, showDialogDataRegister: MutableState<Boolean>) {
-    val dataItems = viewModel.getData().collectAsLazyPagingItems()
 
-    LazyColumn {
-        items(dataItems) { dataItem ->
-            dataItem?.let { item ->
-                DataItemRow(dataItem = item)
-            }
+    //todo: ROOM===================================================================
+
+    //Jetpack Room============================
+    val context = LocalContext.current
+    val db = remember {
+        Room.databaseBuilder(
+            context,
+            AppDatabase::class.java, "sensor-db"
+        ).build()
+    }
+    val dao = db.operationsSesnsorDataItemDao()
+    //===============================================
+
+    //para que funcione con suspend
+    runBlocking {
+        withContext(Dispatchers.IO) {
+            dao.insertAll(listaSensorData)
+            listaNuevaSensorData = dao.getAllSensorData()
         }
-        dataItems.apply {
-            when {
-                loadState.refresh is LoadState.Loading -> {
-                    item { LoadingItem() }
+    }
+    //todo: ROOM===================================================================
+
+    Thread.sleep(3000)
+
+    //Cargar datos
+    val dataItems = viewModel.getData().collectAsLazyPagingItems()
+    //Log.d("confirmar carga de datos", dataItems.get(1).toString())
+
+    Column() {
+        Text(
+            text = "Registros de temperatura",
+            style = TextStyle(
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            ),
+            modifier = Modifier.padding(20.dp)
+        )
+
+        LazyColumn {
+            items(dataItems) { dataItem ->
+                dataItem?.let { item ->
+                    DataItemRow(dataItem = item)
                 }
-                loadState.append is LoadState.Loading -> {
-                    item { LoadingItem() }
-                }
-                loadState.refresh is LoadState.Error -> {
-                    val errorMessage = (loadState.refresh as LoadState.Error).error.message
-                    item { ErrorItem(errorMessage = errorMessage) }
-                }
-                loadState.append is LoadState.Error -> {
-                    val errorMessage = (loadState.append as LoadState.Error).error.message
-                    item { ErrorItem(errorMessage = errorMessage) }
+            }
+            dataItems.apply {
+                when {
+                    loadState.refresh is LoadState.Loading -> {
+                        item { LoadingItem() }
+                    }
+                    loadState.append is LoadState.Loading -> {
+                        item { LoadingItem() }
+                    }
+                    loadState.refresh is LoadState.Error -> {
+                        val errorMessage = (loadState.refresh as LoadState.Error).error.message
+                        item { ErrorItem(errorMessage = errorMessage) }
+                    }
+                    loadState.append is LoadState.Error -> {
+                        val errorMessage = (loadState.append as LoadState.Error).error.message
+                        item { ErrorItem(errorMessage = errorMessage) }
+                    }
                 }
             }
         }

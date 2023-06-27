@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 class MyRepository {
     fun getData(): Flow<PagingData<SensorDataItem>> {
         return Pager(
-            config = PagingConfig(pageSize = 20),
+            config = PagingConfig(pageSize = 10),
             pagingSourceFactory = { MyPagingSource() }
         ).flow
     }
