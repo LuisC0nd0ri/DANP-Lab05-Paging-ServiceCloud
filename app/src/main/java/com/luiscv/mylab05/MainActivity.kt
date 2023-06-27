@@ -2,25 +2,27 @@ package com.luiscv.mylab05
 
 //todo: ESTE ES UN EJEMPLO DEL USO DE JETPACK COMPOSE Y PAGING
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
-import com.luiscv.mylab05.entities.DataItem
+import com.luiscv.mylab05.entities.SensorDataItem
+import com.luiscv.mylab05.mycomponents.SensorDataItemCard
+import com.luiscv.mylab05.operations.addSensorDataItem
 import com.luiscv.mylab05.paging.MyViewModel
 import com.luiscv.mylab05.ui.theme.MyLab05Theme
 
@@ -31,13 +33,32 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+            //dialogos
+            var showDialogDataRegister: MutableState<Boolean> =
+                remember { mutableStateOf(false) }
+
             MyLab05Theme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    MyApp(viewModel)
+
+                    Scaffold(
+                        floatingActionButton = {
+                            FloatingButton {
+                                // Acción a realizar cuando se hace clic en el botón flotante
+                                Toast.makeText(this@MainActivity, "Botón flotante clicado", Toast.LENGTH_SHORT).show()
+                                showDialogDataRegister.value = true
+                            }
+                        }
+                    ) {
+                        // Contenido principal de la actividad
+                        MyApp(viewModel, showDialogDataRegister)
+                    }
+
+
                 }
             }
         }
@@ -45,7 +66,21 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MyApp(viewModel: MyViewModel) {
+fun FloatingButton(onClick: () -> Unit) {
+    FloatingActionButton(
+        onClick = onClick,
+        modifier = Modifier
+            .size(112.dp)
+            .padding(32.dp),
+        shape = CircleShape,
+        elevation = FloatingActionButtonDefaults.elevation(4.dp)
+    ) {
+        Icon(Icons.Filled.Add, contentDescription = "Agregar")
+    }
+}
+
+@Composable
+fun MyApp(viewModel: MyViewModel, showDialogDataRegister: MutableState<Boolean>) {
     val dataItems = viewModel.getData().collectAsLazyPagingItems()
 
     LazyColumn {
@@ -73,13 +108,15 @@ fun MyApp(viewModel: MyViewModel) {
             }
         }
     }
+
+    addSensorDataItem(showDialogDataRegister)
+
 }
 
 @Composable
-fun DataItemRow(dataItem: DataItem) {
+fun DataItemRow(dataItem: SensorDataItem) {
     // Aquí puedes definir el diseño de una fila de item de datos
-    Text(text = dataItem.name)
-    Spacer(modifier = Modifier.padding(10.dp))
+    SensorDataItemCard(sensorDataItem = dataItem)
 }
 
 @Composable
