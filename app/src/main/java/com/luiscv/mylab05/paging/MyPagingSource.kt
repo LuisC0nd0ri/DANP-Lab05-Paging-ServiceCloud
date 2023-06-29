@@ -34,12 +34,15 @@ class MyPagingSource(
                 } else {
                     myDao.getItemsByPage(tamanioData % pageSize, startIndex)
                 }
+
             } else {
                 emptyList()
             }
         }
 
-        Log.d("Numero de pagina", currentPage.toString())
+        if(currentPageData.isNotEmpty()){
+            Log.d("Numero de pagina", currentPage.toString())
+        }
 
         return LoadResult.Page(
             data = currentPageData,

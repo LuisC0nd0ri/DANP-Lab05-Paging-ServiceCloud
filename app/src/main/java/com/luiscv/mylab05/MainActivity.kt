@@ -1,6 +1,7 @@
 package com.luiscv.mylab05
 
 //todo: ESTE ES UN EJEMPLO DEL USO DE JETPACK COMPOSE Y PAGING
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -124,8 +125,14 @@ fun MyApp(showDialogDataRegister: MutableState<Boolean>, mainActivity: MainActiv
             withContext(Dispatchers.IO) {
                 dao.insertAll(listaSensorData)
                 Log.d("AVISOS", "Se acaban de cargar los datos")
+
+                //para que los datos se muestren en la interface
+                val intent = Intent(context, MainActivity::class.java)
+                mainActivity.startActivity(intent)
             }
         }
+
+        //dao.clearAll()
     }
 
     val dataItems = remember(viewModel) {
