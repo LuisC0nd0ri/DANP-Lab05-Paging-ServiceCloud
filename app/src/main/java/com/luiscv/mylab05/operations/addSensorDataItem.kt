@@ -1,6 +1,7 @@
 package com.luiscv.mylab05.operations
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
@@ -9,38 +10,26 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.room.Room
+import com.luiscv.mylab05.MainActivity
 import com.luiscv.mylab05.entities.SensorDataItem
-import com.luiscv.mylab05.listaNuevaSensorData
-import com.luiscv.mylab05.listaSensorData
-import com.luiscv.mylab05.model.AppDatabase
+import com.luiscv.mylab05.model.SensorDataItemDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 @Composable
 fun addSensorDataItem(
-    showDialogDataRegister: MutableState<Boolean>
+    showDialogDataRegister: MutableState<Boolean>,
+    dao: SensorDataItemDao,
+    context: Context,
+    mainActivity: MainActivity
 ){
 
     //campos
     var tffecha by remember { mutableStateOf("") }
     var tfmedicionTemperatura by remember { mutableStateOf("") }
     var tfcomentario by remember { mutableStateOf("") }
-
-
-    //Jetpack Room============================
-    val context = LocalContext.current
-    val db = remember {
-        Room.databaseBuilder(
-            context,
-            AppDatabase::class.java, "sensor-db"
-        ).build()
-    }
-    val dao = db.operationsSesnsorDataItemDao()
-    //===============================================
 
     if(showDialogDataRegister.value){
         AlertDialog(
@@ -49,7 +38,6 @@ fun addSensorDataItem(
                 TextButton(onClick = { /*TODO*/
                     //AQUI AGREGAMOS EL CODIGO PARA REGISTRAR
 
-                    //todo: añadir al room tambien
                     //para que funcione con suspend
                     runBlocking {
                         withContext(Dispatchers.IO) {
@@ -63,10 +51,8 @@ fun addSensorDataItem(
                     //cerrar ventana
                     showDialogDataRegister.value = false
 
-                    //agregar a lista
-                    listaNuevaSensorData += SensorDataItem(
-                        0,tffecha.toString(),tfmedicionTemperatura.toString(),tfcomentario.toString()
-                    )
+                    val intent = Intent(context, MainActivity::class.java)
+                    mainActivity.startActivity(intent)
 
                 }) {
                     Text(text = "Registrar")

@@ -7,11 +7,13 @@ import com.luiscv.mylab05.entities.SensorDataItem
 import com.luiscv.mylab05.paging.MyPagingSource
 import kotlinx.coroutines.flow.Flow
 
-class MyRepository {
+class MyRepository(
+    private val myDao: SensorDataItemDao
+    ) {
     fun getData(): Flow<PagingData<SensorDataItem>> {
         return Pager(
             config = PagingConfig(pageSize = 10),
-            pagingSourceFactory = { MyPagingSource() }
+            pagingSourceFactory = { MyPagingSource(myDao) }
         ).flow
     }
 }

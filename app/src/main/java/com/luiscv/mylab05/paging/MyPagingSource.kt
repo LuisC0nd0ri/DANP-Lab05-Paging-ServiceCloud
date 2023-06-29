@@ -4,38 +4,50 @@ import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.luiscv.mylab05.entities.SensorDataItem
-import com.luiscv.mylab05.listaNuevaSensorData
+import com.luiscv.mylab05.model.SensorDataItemDao
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class MyPagingSource : PagingSource<Int, SensorDataItem>() {
+class MyPagingSource(
+    //para hacer las consultas, private val para que se asigne como propiedad de clase
+    private val myDao: SensorDataItemDao
+    ) : PagingSource<Int, SensorDataItem>() {
+
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SensorDataItem> {
-        try {
-            val currentPage = params.key ?: 1
-            val nextPage = currentPage + 1
+        val pageSize = 10
 
-            val startIndex = (currentPage * 10) - 10
-            val endIndex = (currentPage * 10) - 1
+        val currentPage = params.key ?: 1
+        val nextPage = currentPage + 1
 
-            val data = if (startIndex < listaNuevaSensorData.size) {
-                if (endIndex < listaNuevaSensorData.size) {
-                    listaNuevaSensorData.subList(startIndex, endIndex + 1)
+        val startIndex = (currentPage * pageSize) - 10
+        val endIndex = (currentPage * pageSize) - 1
+
+        val tamanioData = withContext(Dispatchers.IO) {
+            myDao.getTotalItemCount()
+        }
+        Log.d("NUM DATOS", tamanioData.toString())
+
+        val currentPageData = withContext(Dispatchers.IO) {
+            if (startIndex+1 <= tamanioData) {
+                if (endIndex+1 <= tamanioData) {
+                    myDao.getItemsByPage(pageSize, startIndex)
                 } else {
-                    listaNuevaSensorData.subList(startIndex, listaNuevaSensorData.size)
+                    myDao.getItemsByPage(tamanioData % pageSize, startIndex)
                 }
             } else {
-                null
+                emptyList()
             }
-
-            Log.d("Numero de pagina", currentPage.toString())
-
-            return LoadResult.Page(
-                data = data?: listOf(),
-                prevKey = null,
-                nextKey = if (data != null) nextPage else null
-            )
-        } catch (e: Exception) {
-            return LoadResult.Error(e)
         }
+
+        Log.d("Numero de pagina", currentPage.toString())
+
+        return LoadResult.Page(
+            data = currentPageData,
+            prevKey = null,
+            nextKey = if (currentPageData.isNotEmpty()) nextPage else null
+        )
     }
+
 
 
     override fun getRefreshKey(state: PagingState<Int, SensorDataItem>): Int? {

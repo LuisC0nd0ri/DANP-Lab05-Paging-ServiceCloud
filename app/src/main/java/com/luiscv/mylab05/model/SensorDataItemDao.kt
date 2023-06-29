@@ -20,6 +20,18 @@ interface SensorDataItemDao {
     @Query("SELECT * FROM sensordataitem")
     fun getAllSensorData(): List<SensorDataItem>
 
+    //devuelve elementos para una determinada pagina
+    @Query("SELECT * FROM sensordataitem ORDER BY id LIMIT :pageSize OFFSET :offset")
+    fun getItemsByPage(pageSize: Int, offset: Int): List<SensorDataItem>
+
+    //devuelve el numero total de elementos
+    @Query("SELECT COUNT(*) FROM sensordataitem")
+    suspend fun getTotalItemCount(): Int
+
+    suspend fun isTableEmpty(): Boolean {
+        return getTotalItemCount() == 0
+    }
+
     @Query("DELETE FROM sensordataitem")
     suspend fun clearAll()
 }

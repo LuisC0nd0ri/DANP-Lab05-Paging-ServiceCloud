@@ -1,12 +1,11 @@
 package com.luiscv.mylab05
 
 //todo: ESTE ES UN EJEMPLO DEL USO DE JETPACK COMPOSE Y PAGING
-import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -22,7 +21,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
+import androidx.paging.cachedIn
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import androidx.room.Room
@@ -36,7 +37,8 @@ import kotlinx.coroutines.*
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: MyViewModel by viewModels()
+    //private val viewModel: MyViewModel by viewModels()
+    //private lateinit var viewModel: MyViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +65,7 @@ class MainActivity : ComponentActivity() {
                         }
                     ) {
                         // Contenido principal de la actividad
-                        MyApp(viewModel, showDialogDataRegister)
+                        MyApp(showDialogDataRegister, this)
                     }
 
 
@@ -86,15 +88,11 @@ fun FloatingButton(onClick: () -> Unit) {
         Icon(Icons.Filled.Add, contentDescription = "Agregar")
     }
 }
-
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun MyApp(viewModel: MyViewModel, showDialogDataRegister: MutableState<Boolean>) {
-
-    //todo: ROOM===================================================================
-
-    //Jetpack Room============================
+fun MyApp(showDialogDataRegister: MutableState<Boolean>, mainActivity: MainActivity) {
     val context = LocalContext.current
+
+    // Jetpack Room============================
     val db = remember {
         Room.databaseBuilder(
             context,
@@ -104,22 +102,46 @@ fun MyApp(viewModel: MyViewModel, showDialogDataRegister: MutableState<Boolean>)
     val dao = db.operationsSesnsorDataItemDao()
     //===============================================
 
-    //para que funcione con suspend
-    runBlocking {
-        withContext(Dispatchers.IO) {
-            dao.insertAll(listaSensorData)
-            listaNuevaSensorData = dao.getAllSensorData()
+    val viewModel: MyViewModel = remember {
+        MyViewModel(dao)
+    }
+
+    // Verificar si la tabla está vacía antes de insertar los datos
+    val isEmpty = remember {
+        mutableStateOf(true)
+    }
+
+    //Se utilizan los efectos de lanzamiento (LaunchedEffect) para realizar las
+    //operaciones de base de datos y la carga de datos en segundo plano. Esto
+    //garantiza que las operaciones se realicen fuera del hilo principal y no
+    //bloqueen la interfaz de usuario.
+    LaunchedEffect(Unit) {
+        isEmpty.value = withContext(Dispatchers.IO) {
+            dao.isTableEmpty()
+        }
+
+        if (isEmpty.value) {
+            withContext(Dispatchers.IO) {
+                dao.insertAll(listaSensorData)
+                Log.d("AVISOS", "Se acaban de cargar los datos")
+            }
         }
     }
-    //todo: ROOM===================================================================
 
-    Thread.sleep(3000)
+    val dataItems = remember(viewModel) {
+        viewModel.getData().cachedIn(viewModel.viewModelScope)
+    }.collectAsLazyPagingItems()
 
-    //Cargar datos
-    val dataItems = viewModel.getData().collectAsLazyPagingItems()
-    //Log.d("confirmar carga de datos", dataItems.get(1).toString())
+    LaunchedEffect(Unit) {
+        if (dataItems.itemCount > 0) {
+            Log.d("Carga de datos: ", dataItems[1].toString())
+        } else {
+            Log.d("Carga de datos: ", "No hay suficientes elementos cargados")
+        }
+    }
 
-    Column() {
+
+    Column {
         Text(
             text = "Registros de temperatura",
             style = TextStyle(
@@ -156,9 +178,9 @@ fun MyApp(viewModel: MyViewModel, showDialogDataRegister: MutableState<Boolean>)
         }
     }
 
-    addSensorDataItem(showDialogDataRegister)
-
+    addSensorDataItem(showDialogDataRegister, dao, context, mainActivity)
 }
+
 
 @Composable
 fun DataItemRow(dataItem: SensorDataItem) {

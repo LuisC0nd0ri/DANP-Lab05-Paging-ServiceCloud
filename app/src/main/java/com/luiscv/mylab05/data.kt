@@ -2,7 +2,7 @@ package com.luiscv.mylab05
 
 import com.luiscv.mylab05.entities.SensorDataItem
 
-var listaNuevaSensorData: List<SensorDataItem> = emptyList()
+//var listaNuevaSensorData: List<SensorDataItem> = emptyList()
 
 val listaSensorData: List<SensorDataItem> = listOf(
     SensorDataItem(0, "07/06/2023", "1", "Ninguno"),
