@@ -140,7 +140,7 @@ private suspend fun getData_Retrofit_lastkey(ctx: Context): Int? {
     val maxregisters = 20
 
     try {
-        val response = retrofitAPI.obtenerRegistros(startregister, maxregisters).execute()
+        val response = retrofitAPI.obtenerKeyMax(startregister, maxregisters).execute()
         if (response.isSuccessful) {
             val registersResponse = response.body()
             val lastRegistroId = registersResponse?.lastRegistroId

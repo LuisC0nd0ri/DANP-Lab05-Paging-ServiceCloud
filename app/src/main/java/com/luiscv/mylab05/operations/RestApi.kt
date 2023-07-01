@@ -12,7 +12,7 @@ interface RestApi {
     @POST("sensorapi")
     fun crearRegistro(@Body sensorinfo: SensorRegister?): Call<SensorRegister?>?
     @GET("sensorapi")
-    fun obtenerRegistros(
+    fun obtenerKeyMax(
         @Query("startregister") start: Int,
         @Query("maxregisters") max: Int
     ): Call<SensorRegisterContainer>
