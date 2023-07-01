@@ -147,10 +147,10 @@ private suspend fun getData_Retrofit_lastkey(ctx: Context): Int? {
             Log.d("GET_REGISTROID", lastRegistroId.toString())
             return lastRegistroId
         } else {
-            // Procesar respuesta no exitosa
+            val errorCode = response.code()
+            Log.d("GET_ERROR", "Código de error: $errorCode")
         }
     } catch (e: IOException) {
-        // Procesar error en la petición
     }
 
     return null
