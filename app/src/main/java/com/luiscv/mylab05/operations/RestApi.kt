@@ -16,4 +16,9 @@ interface RestApi {
         @Query("startregister") start: Int,
         @Query("maxregisters") max: Int
     ): Call<SensorRegisterContainer>
+    @GET("sensorapi")
+    fun obtenerRegistros(
+        @Query("startregister") start: Int,
+        @Query("maxregisters") max: Int
+    ): Call<List<SensorRegister>>
 }
