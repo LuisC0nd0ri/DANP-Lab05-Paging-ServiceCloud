@@ -144,7 +144,7 @@ private suspend fun getData_Retrofit_lastkey(ctx: Context): Int? {
         if (response.isSuccessful) {
             val registersResponse = response.body()
             val lastRegistroId = registersResponse?.lastRegistroId
-            Log.d("POST_GET", lastRegistroId.toString())
+            Log.d("GET_REGISTROID", lastRegistroId.toString())
             return lastRegistroId
         } else {
             // Procesar respuesta no exitosa
