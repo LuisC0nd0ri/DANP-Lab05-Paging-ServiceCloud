@@ -1,6 +1,7 @@
 package com.luiscv.mylab05
 
 //todo: ESTE ES UN EJEMPLO DEL USO DE JETPACK COMPOSE Y PAGING
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -12,10 +13,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +45,8 @@ class MainActivity : ComponentActivity() {
             //dialogos
             var showDialogDataRegister: MutableState<Boolean> =
                 remember { mutableStateOf(false) }
+            var reloadVar: MutableState<Boolean> =
+                remember { mutableStateOf(false) }
 
             MyLab05Theme {
                 // A surface container using the 'background' color from the theme
@@ -52,15 +57,22 @@ class MainActivity : ComponentActivity() {
 
                     Scaffold(
                         floatingActionButton = {
-                            FloatingButton {
-                                // Acción a realizar cuando se hace clic en el botón flotante
-                                Toast.makeText(this@MainActivity, "Botón flotante clicado", Toast.LENGTH_SHORT).show()
-                                showDialogDataRegister.value = true
+                            Row(){
+                                FloatingButton(Icons.Filled.Add) {
+                                    // Acción a realizar cuando se hace clic en el botón flotante
+                                    Toast.makeText(this@MainActivity, "Botón flotante clicado", Toast.LENGTH_SHORT).show()
+                                    showDialogDataRegister.value = true
+                                }
+                                FloatingButton(Icons.Filled.List) {
+                                    // Acción a realizar cuando se hace clic en el botón flotante
+                                    Toast.makeText(this@MainActivity, "Actualizando ... ", Toast.LENGTH_SHORT).show()
+                                    reloadVar.value = true
+                                }
                             }
                         }
                     ) {
                         // Contenido principal de la actividad
-                        MyApp(showDialogDataRegister, this)
+                        MyApp(showDialogDataRegister, reloadVar, this)
                     }
 
 
@@ -71,20 +83,20 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun FloatingButton(onClick: () -> Unit) {
+fun FloatingButton(icon: ImageVector,onClick: () -> Unit) {
     FloatingActionButton(
         onClick = onClick,
         modifier = Modifier
-            .size(112.dp)
-            .padding(32.dp),
+            .size(60.dp)
+            .padding(8.dp),
         shape = CircleShape,
         elevation = FloatingActionButtonDefaults.elevation(4.dp)
     ) {
-        Icon(Icons.Filled.Add, contentDescription = "Agregar")
+        Icon(icon, contentDescription = "Agregar")
     }
 }
 @Composable
-fun MyApp(showDialogDataRegister: MutableState<Boolean>, mainActivity: MainActivity) {
+fun MyApp(showDialogDataRegister: MutableState<Boolean>,reloadVar: MutableState<Boolean>, mainActivity: MainActivity) {
 
     val context = LocalContext.current
 
@@ -135,7 +147,7 @@ fun MyApp(showDialogDataRegister: MutableState<Boolean>, mainActivity: MainActiv
             }
         }
     }
-
+    ReloadPage(reloadVar)
     addSensorDataItem(showDialogDataRegister, context, mainActivity)
 
 }
@@ -179,3 +191,11 @@ fun ErrorItem(errorMessage: String?) {
 
 }
 
+@Composable
+fun ReloadPage(reloadVar : MutableState<Boolean>) {
+    if (reloadVar.value) {
+        val context = LocalContext.current
+        val intent = Intent(context, MainActivity::class.java)
+        context.startActivity(intent)
+    }
+}
