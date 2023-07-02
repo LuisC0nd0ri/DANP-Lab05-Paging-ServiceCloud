@@ -14,8 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.luiscv.mylab05.MainActivity
-import com.luiscv.mylab05.entities.SensorDataItem
-import com.luiscv.mylab05.model.SensorDataItemDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -90,62 +88,3 @@ fun addSensorDataItem(
 
 }
 
-private fun postData_Retrofit(
-    ctx: Context,
-    RegistroId: Int,
-    FechayHora: String,
-    medida: Int,
-    comentario: String
-) {
-    var url = "https://qap9opok49.execute-api.us-west-2.amazonaws.com/prod/"
-    val retrofit = Retrofit.Builder()
-        .baseUrl(url)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    val retrofitAPI = retrofit.create(RestApi::class.java)
-    val dataModel = SensorRegister(RegistroId, FechayHora,medida,comentario)
-    val call: Call<SensorRegister?>? = retrofitAPI.crearRegistro(dataModel)
-    call!!.enqueue(object : Callback<SensorRegister?> {
-        override fun onResponse(call: Call<SensorRegister?>?, response: Response<SensorRegister?>) {
-            if (response.isSuccessful) {
-                val responseBody = response.body()
-                Log.d("POST_SUCCESS", "Respuesta exitosa")
-            } else {
-                val errorCode = response.code()
-                Log.d("POST_ERROR", "Código de error: $errorCode")
-            }
-        }
-
-        override fun onFailure(call: Call<SensorRegister?>?, t: Throwable) {
-            Log.e("POST_FAILURE", "Error en la solicitud: ${t.message}")
-        }
-    })
-}
-
-private suspend fun getData_Retrofit_lastkey(ctx: Context): Int? {
-    val url = "https://qap9opok49.execute-api.us-west-2.amazonaws.com/prod/"
-    val retrofit = Retrofit.Builder()
-        .baseUrl(url)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    val retrofitAPI = retrofit.create(RestApi::class.java)
-
-    val startregister = 1
-    val maxregisters = 20
-
-    try {
-        val response = retrofitAPI.obtenerKeyMax(startregister, maxregisters).execute()
-        if (response.isSuccessful) {
-            val registersResponse = response.body()
-            val lastRegistroId = registersResponse?.lastRegistroId
-            Log.d("GET_REGISTROID", lastRegistroId.toString())
-            return lastRegistroId
-        } else {
-            val errorCode = response.code()
-            Log.d("GET_ERROR", "Código de error: $errorCode")
-        }
-    } catch (e: IOException) {
-    }
-
-    return null
-}

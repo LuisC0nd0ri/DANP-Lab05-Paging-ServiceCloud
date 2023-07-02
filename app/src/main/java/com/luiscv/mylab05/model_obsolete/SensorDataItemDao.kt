@@ -1,10 +1,10 @@
-package com.luiscv.mylab05.model
+package com.luiscv.mylab05.model_obsolete
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.luiscv.mylab05.entities.SensorDataItem
+import com.luiscv.mylab05.entities_obsolete.SensorDataItem
 
 //todo: ROOM===================================================================
 

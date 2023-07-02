@@ -1,10 +1,10 @@
-package com.luiscv.mylab05.paging
+package com.luiscv.mylab05.paging_obsolete
 
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.luiscv.mylab05.entities.SensorDataItem
-import com.luiscv.mylab05.model.SensorDataItemDao
+import com.luiscv.mylab05.entities_obsolete.SensorDataItem
+import com.luiscv.mylab05.model_obsolete.SensorDataItemDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

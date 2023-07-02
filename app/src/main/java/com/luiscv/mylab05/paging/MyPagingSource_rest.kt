@@ -1,17 +1,12 @@
 package com.luiscv.mylab05.paging
 
-import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.luiscv.mylab05.operations.RestApi
-import com.luiscv.mylab05.operations.SensorRegister
-import com.luiscv.mylab05.operations.SensorRegisterContainer
+import com.luiscv.mylab05.entities.SensorRegister
+import com.luiscv.mylab05.entities.SensorRegisterContainer
 import com.luiscv.mylab05.operations.getData_Retrofit_all
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.Call
 
 class MyPagingSource_rest() : PagingSource<Int, SensorRegister>() {
 
@@ -41,7 +36,8 @@ class MyPagingSource_rest() : PagingSource<Int, SensorRegister>() {
                 sensorRegisterContainer = getData_Retrofit_all(startregister,maxregisters)
             }
             sensorRegisterContainer?.registers?.forEach { sensorRegister ->
-                SensorReturn.add(SensorRegister(
+                SensorReturn.add(
+                    SensorRegister(
                     sensorRegister.RegistroId,
                     sensorRegister.FechayHora,
                     sensorRegister.medida,

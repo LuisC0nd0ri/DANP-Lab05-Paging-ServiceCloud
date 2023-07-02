@@ -12,12 +12,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -28,18 +26,11 @@ import androidx.paging.LoadState
 import androidx.paging.cachedIn
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
-import com.luiscv.mylab05.entities.SensorDataItem
 import com.luiscv.mylab05.mycomponents.SensorDataItemCard
-import com.luiscv.mylab05.operations.RestApi
-import com.luiscv.mylab05.operations.SensorRegister
+import com.luiscv.mylab05.entities.SensorRegister
 import com.luiscv.mylab05.operations.addSensorDataItem
-import com.luiscv.mylab05.operations.getData_Retrofit_all
 import com.luiscv.mylab05.paging.MyViewModel_Rest
 import com.luiscv.mylab05.ui.theme.MyLab05Theme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
 

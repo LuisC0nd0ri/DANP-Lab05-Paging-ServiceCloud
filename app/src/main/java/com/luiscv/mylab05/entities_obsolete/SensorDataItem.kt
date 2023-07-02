@@ -1,4 +1,4 @@
-package com.luiscv.mylab05.entities
+package com.luiscv.mylab05.entities_obsolete
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

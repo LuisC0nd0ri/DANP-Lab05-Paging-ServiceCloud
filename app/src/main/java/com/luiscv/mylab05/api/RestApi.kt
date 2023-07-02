@@ -1,5 +1,7 @@
-package com.luiscv.mylab05.operations
+package com.luiscv.mylab05.api
 
+import com.luiscv.mylab05.entities.SensorRegister
+import com.luiscv.mylab05.entities.SensorRegisterContainer
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET

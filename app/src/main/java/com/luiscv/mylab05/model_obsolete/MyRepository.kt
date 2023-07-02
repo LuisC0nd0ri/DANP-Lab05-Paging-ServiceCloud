@@ -1,10 +1,10 @@
-package com.luiscv.mylab05.model
+package com.luiscv.mylab05.model_obsolete
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.luiscv.mylab05.entities.SensorDataItem
-import com.luiscv.mylab05.paging.MyPagingSource
+import com.luiscv.mylab05.entities_obsolete.SensorDataItem
+import com.luiscv.mylab05.paging_obsolete.MyPagingSource
 import kotlinx.coroutines.flow.Flow
 
 class MyRepository(

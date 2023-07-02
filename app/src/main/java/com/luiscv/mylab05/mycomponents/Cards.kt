@@ -9,10 +9,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import com.luiscv.mylab05.entities.SensorDataItem
-import com.luiscv.mylab05.operations.SensorRegister
+import com.luiscv.mylab05.entities.SensorRegister
 
 @Composable
 fun SensorDataItemCard(

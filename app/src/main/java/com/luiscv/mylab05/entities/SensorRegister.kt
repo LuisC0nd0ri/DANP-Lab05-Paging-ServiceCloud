@@ -1,4 +1,4 @@
-package com.luiscv.mylab05.operations
+package com.luiscv.mylab05.entities
 
 data class SensorRegister(
     var RegistroId: Int,

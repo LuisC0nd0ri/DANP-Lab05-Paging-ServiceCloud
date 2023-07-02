@@ -1,6 +1,6 @@
 package com.luiscv.mylab05
 
-import com.luiscv.mylab05.entities.SensorDataItem
+import com.luiscv.mylab05.entities_obsolete.SensorDataItem
 
 //var listaNuevaSensorData: List<SensorDataItem> = emptyList()
 
