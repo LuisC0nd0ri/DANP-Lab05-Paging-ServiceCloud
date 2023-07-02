@@ -1,7 +1,6 @@
 package com.luiscv.mylab05
 
 //todo: ESTE ES UN EJEMPLO DEL USO DE JETPACK COMPOSE Y PAGING
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -13,10 +12,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,19 +28,21 @@ import androidx.paging.LoadState
 import androidx.paging.cachedIn
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
-import androidx.room.Room
 import com.luiscv.mylab05.entities.SensorDataItem
-import com.luiscv.mylab05.model.AppDatabase
 import com.luiscv.mylab05.mycomponents.SensorDataItemCard
+import com.luiscv.mylab05.operations.RestApi
+import com.luiscv.mylab05.operations.SensorRegister
 import com.luiscv.mylab05.operations.addSensorDataItem
-import com.luiscv.mylab05.paging.MyViewModel
+import com.luiscv.mylab05.operations.getData_Retrofit_all
+import com.luiscv.mylab05.paging.MyViewModel_Rest
 import com.luiscv.mylab05.ui.theme.MyLab05Theme
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
 
-    //private val viewModel: MyViewModel by viewModels()
-    //private lateinit var viewModel: MyViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,61 +94,17 @@ fun FloatingButton(onClick: () -> Unit) {
 }
 @Composable
 fun MyApp(showDialogDataRegister: MutableState<Boolean>, mainActivity: MainActivity) {
+
     val context = LocalContext.current
 
-    // Jetpack Room============================
-    val db = remember {
-        Room.databaseBuilder(
-            context,
-            AppDatabase::class.java, "sensor-db"
-        ).build()
-    }
-    val dao = db.operationsSesnsorDataItemDao()
-    //===============================================
 
-    val viewModel: MyViewModel = remember {
-        MyViewModel(dao)
-    }
-
-    // Verificar si la tabla está vacía antes de insertar los datos
-    val isEmpty = remember {
-        mutableStateOf(true)
-    }
-
-    //Se utilizan los efectos de lanzamiento (LaunchedEffect) para realizar las
-    //operaciones de base de datos y la carga de datos en segundo plano. Esto
-    //garantiza que las operaciones se realicen fuera del hilo principal y no
-    //bloqueen la interfaz de usuario.
-    LaunchedEffect(Unit) {
-        isEmpty.value = withContext(Dispatchers.IO) {
-            dao.isTableEmpty()
-        }
-
-        if (isEmpty.value) {
-            withContext(Dispatchers.IO) {
-                dao.insertAll(listaSensorData)
-                Log.d("AVISOS", "Se acaban de cargar los datos")
-
-                //para que los datos se muestren en la interface
-                val intent = Intent(context, MainActivity::class.java)
-                mainActivity.startActivity(intent)
-            }
-        }
-
-        //dao.clearAll()
+    val viewModel: MyViewModel_Rest = remember {
+        MyViewModel_Rest()
     }
 
     val dataItems = remember(viewModel) {
         viewModel.getData().cachedIn(viewModel.viewModelScope)
     }.collectAsLazyPagingItems()
-
-    LaunchedEffect(Unit) {
-        if (dataItems.itemCount > 0) {
-            Log.d("Carga de datos: ", dataItems[1].toString())
-        } else {
-            Log.d("Carga de datos: ", "No hay suficientes elementos cargados")
-        }
-    }
 
 
     Column {
@@ -161,6 +120,7 @@ fun MyApp(showDialogDataRegister: MutableState<Boolean>, mainActivity: MainActiv
         LazyColumn {
             items(dataItems) { dataItem ->
                 dataItem?.let { item ->
+                    Log.e("ITEM_SHOW", "${item.RegistroId}")
                     DataItemRow(dataItem = item)
                 }
             }
@@ -185,14 +145,15 @@ fun MyApp(showDialogDataRegister: MutableState<Boolean>, mainActivity: MainActiv
         }
     }
 
-    addSensorDataItem(showDialogDataRegister, dao, context, mainActivity)
+    addSensorDataItem(showDialogDataRegister, context, mainActivity)
+
 }
 
 
 @Composable
-fun DataItemRow(dataItem: SensorDataItem) {
+fun DataItemRow(dataItem: SensorRegister) {
     // Aquí puedes definir el diseño de una fila de item de datos
-    SensorDataItemCard(sensorDataItem = dataItem)
+    SensorDataItemCard(sensorRegister = dataItem)
 }
 
 @Composable
@@ -226,3 +187,4 @@ fun ErrorItem(errorMessage: String?) {
     }
 
 }
+

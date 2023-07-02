@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 class MyRepository(
     private val myDao: SensorDataItemDao
-    ) {
+) {
     fun getData(): Flow<PagingData<SensorDataItem>> {
         return Pager(
             config = PagingConfig(pageSize = 10),

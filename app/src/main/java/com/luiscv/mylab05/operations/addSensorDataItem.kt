@@ -19,7 +19,6 @@ import com.luiscv.mylab05.model.SensorDataItemDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,7 +29,6 @@ import java.io.IOException
 @Composable
 fun addSensorDataItem(
     showDialogDataRegister: MutableState<Boolean>,
-    dao: SensorDataItemDao,
     context: Context,
     mainActivity: MainActivity
 ){
@@ -57,10 +55,6 @@ fun addSensorDataItem(
                                     ctx,lastRegistroId+1,tffecha.toString(),tfmedicionTemperatura.toInt(),tfcomentario.toString()
                                 )
                             }
-                            dao.insert(
-                                SensorDataItem(
-                                0,tffecha.toString(),tfmedicionTemperatura.toString(),tfcomentario.toString())
-                            )
                         }
                     }
 

@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 class MyPagingSource(
     //para hacer las consultas, private val para que se asigne como propiedad de clase
     private val myDao: SensorDataItemDao
-    ) : PagingSource<Int, SensorDataItem>() {
+) : PagingSource<Int, SensorDataItem>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SensorDataItem> {
         val pageSize = 10

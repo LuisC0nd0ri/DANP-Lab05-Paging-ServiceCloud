@@ -12,10 +12,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.luiscv.mylab05.entities.SensorDataItem
+import com.luiscv.mylab05.operations.SensorRegister
 
 @Composable
 fun SensorDataItemCard(
-    sensorDataItem: SensorDataItem
+    sensorRegister: SensorRegister
 ){
 
     Card(
@@ -31,9 +32,9 @@ fun SensorDataItemCard(
                 .fillMaxSize()
                 .padding(10.dp)
         ) {
-            Text(text = "Fecha: " + sensorDataItem.fecha)
-            Text(text = "Medicion temperatura: " + sensorDataItem.medicionTemperatura)
-            Text(text = "Comentario: " + sensorDataItem.comentario)
+            Text(text = "Fecha: " + sensorRegister.FechayHora)
+            Text(text = "Medicion temperatura: " + sensorRegister.medida)
+            Text(text = "Comentario: " + sensorRegister.comentario)
         }
 
     }

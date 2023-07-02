@@ -10,7 +10,9 @@ import retrofit2.http.Query
 interface RestApi {
     @Headers("Content-Type: application/json")
     @POST("sensorapi")
-    fun crearRegistro(@Body sensorinfo: SensorRegister?): Call<SensorRegister?>?
+    fun crearRegistro(
+        @Body sensorinfo: SensorRegister?
+    ): Call<SensorRegister?>?
     @GET("sensorapi")
     fun obtenerKeyMax(
         @Query("startregister") start: Int,
@@ -20,5 +22,5 @@ interface RestApi {
     fun obtenerRegistros(
         @Query("startregister") start: Int,
         @Query("maxregisters") max: Int
-    ): Call<List<SensorRegister>>
+    ): Call<SensorRegisterContainer>
 }

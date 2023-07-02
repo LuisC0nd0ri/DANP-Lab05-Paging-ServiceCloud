@@ -8,8 +8,8 @@ import com.luiscv.mylab05.model.SensorDataItemDao
 import kotlinx.coroutines.flow.Flow
 
 class MyViewModel(
-        private val myDao: SensorDataItemDao //estos parametros son del constructor
-    ) : ViewModel() {
+    private val myDao: SensorDataItemDao //estos parametros son del constructor
+) : ViewModel() {
 
     private val repository = MyRepository(myDao)
 
